@@ -1,0 +1,157 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>Online<br>Enrollment<br>System</h2>
+        </div>
+
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="nav-item active">
+                Dashboard
+            </a>
+        </nav>
+
+        <form method="POST" action="{% url 'logout' %}"
+              class="sidebar-logout">
+            {% csrf_token %}
+            <button type="submit">Log Out</button>
+        </form>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="top-header">
+            <h1>Student Profile</h1>
+
+            <a href="{% url 'dashboard' %}" class="back-top">
+                ← Back to Dashboard
+            </a>
+        </header>
+
+        <section class="profile-container">
+
+            <!-- LEFT PROFILE -->
+            <div class="profile-left">
+
+                <div class="profile-avatar">
+                    {{ student.full_name|first|upper }}
+                </div>
+
+                <h2>{{ student.full_name }}</h2>
+
+                <p class="student-id">
+                    Student ID: {{ student.student_number }}
+                </p>
+
+                <span class="course-badge">
+                    {{ student.course }} - {{ student.year_level }}
+                </span>
+
+                <a href="{% url 'edit_student' student.id %}"
+                   class="edit-profile">
+                    Edit Profile
+                </a>
+
+            </div>
+
+            <!-- RIGHT INFORMATION -->
+            <div class="profile-right">
+
+                <!-- PERSONAL INFORMATION -->
+                <div class="info-section">
+
+                    <div class="info-heading">
+                        Personal Information
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-row">
+                            <label>Full Name</label>
+                            <span>{{ student.full_name }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <label>Course</label>
+                            <span>{{ student.course }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <label>Year Level</label>
+                            <span>{{ student.year_level }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <label>Section</label>
+                            <span>{{ student.section }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <label>Birth Date</label>
+                            <span>{{ student.birth_date|default:"Not provided" }}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- CONTACT INFORMATION -->
+                <div class="info-section">
+
+                    <div class="info-heading">
+                        Contact Information
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-row">
+                            <label>Email</label>
+                            <span>{{ student.email|default:"Not provided" }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <label>Phone</label>
+                            <span>{{ student.contact_number|default:"Not provided" }}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ADDRESS -->
+                <div class="info-section">
+
+                    <div class="info-heading">
+                        Address
+                    </div>
+
+                    <div class="info-content">
+                        <p class="address-text">
+                            {{ student.address|default:"Not provided" }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

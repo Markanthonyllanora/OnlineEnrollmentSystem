@@ -1,0 +1,420 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Online Enrollment System</title>
+
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h2>Online<br>Enrollment<br>System</h2>
+        </div>
+
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="nav-item active">
+                Dashboard
+            </a>
+        </nav>
+
+        <form method="POST" action="{% url 'logout' %}" class="sidebar-logout">
+            {% csrf_token %}
+            <button type="submit">Log Out</button>
+        </form>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="top-header">
+            <h1>Dashboard</h1>
+        </header>
+
+        <section class="students-section">
+
+            <!-- MESSAGES -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- SECTION HEADER -->
+            <div class="section-header">
+
+                <h2>Students</h2>
+
+                <button
+                    type="button"
+                    class="add-button"
+                    onclick="openStudentModal()">
+                    + Add Student
+                </button>
+
+            </div>
+
+            <!-- SEARCH AND FILTERS -->
+            <form method="GET"
+                  action="{% url 'dashboard' %}"
+                  class="search-container">
+
+                <input
+                    type="text"
+                    name="search"
+                    class="search-input"
+                    placeholder="Search name or student no."
+                    value="{{ search|default:'' }}"
+                >
+
+                <select name="year" class="filter-select">
+                    <option value="">All years</option>
+
+                    <option value="1st Year"
+                        {% if selected_year == "1st Year" %}selected{% endif %}>
+                        1st Year
+                    </option>
+
+                    <option value="2nd Year"
+                        {% if selected_year == "2nd Year" %}selected{% endif %}>
+                        2nd Year
+                    </option>
+
+                    <option value="3rd Year"
+                        {% if selected_year == "3rd Year" %}selected{% endif %}>
+                        3rd Year
+                    </option>
+
+                    <option value="4th Year"
+                        {% if selected_year == "4th Year" %}selected{% endif %}>
+                        4th Year
+                    </option>
+                </select>
+
+                <select name="section" class="filter-select">
+                    <option value="">All sections</option>
+
+                    {% for item in sections %}
+                        <option value="{{ item }}"
+                            {% if selected_section == item %}selected{% endif %}>
+                            {{ item }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit" class="search-button">
+                    Search
+                </button>
+
+            </form>
+
+            <!-- STUDENT LIST -->
+            <div class="student-list">
+
+                {% for student in students %}
+
+                    <!-- WHOLE STUDENT CARD IS CLICKABLE -->
+                    <a href="{% url 'student_detail' student.id %}"
+                       class="student-card-link"
+                       aria-label="View {{ student.full_name }}'s profile">
+
+                        <div class="student-item">
+
+                            <div class="student-details">
+
+                                <h3 class="student-name">
+                                    {{ student.full_name }}
+                                </h3>
+
+                                <span>
+                                    Student ID: {{ student.student_number }}
+                                </span>
+
+                                <small>
+                                    {{ student.course }} |
+                                    {{ student.year_level }} |
+                                    {{ student.section }}
+                                </small>
+
+                            </div>
+
+                            <span class="student-arrow">
+                                ›
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <h3>No Student Records Yet</h3>
+
+                        <p>
+                            There are no students to display.
+                            Click Add Student to create your first record.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ADD STUDENT POPUP -->
+<div class="modal-overlay" id="studentModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2>Add Student</h2>
+
+            <button
+                type="button"
+                class="close-button"
+                onclick="closeStudentModal()">
+                &times;
+            </button>
+
+        </div>
+
+        <form method="POST" action="{% url 'dashboard' %}">
+
+            {% csrf_token %}
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="form-section-title">
+                Personal Information
+            </div>
+
+            <div class="form-group">
+                <label>Student Number <span>*</span></label>
+                <input
+                    type="text"
+                    name="student_number"
+                    placeholder="Enter student number"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name <span>*</span></label>
+                <input
+                    type="text"
+                    name="full_name"
+                    placeholder="Enter full name"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Birth Date</label>
+                <input type="date" name="birth_date">
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input
+                    type="text"
+                    name="contact_number"
+                    placeholder="Enter contact number">
+            </div>
+
+            <div class="form-group">
+                <label>Complete Address</label>
+                <textarea
+                    name="address"
+                    placeholder="Enter complete address"></textarea>
+            </div>
+
+
+            <!-- ACADEMIC INFORMATION -->
+            <div class="form-section-title">
+                Academic Information
+            </div>
+
+            <div class="form-group">
+                <label>Course <span>*</span></label>
+
+                <select name="course" required>
+                    <option value="">Select Course</option>
+                    <option value="ABELS">ABELS</option>
+                    <option value="BSA">BSA</option>
+                    <option value="BSAIS">BSAIS</option>
+                    <option value="BSE">BSE</option>
+                    <option value="BSIT">BSIT</option>
+                    <option value="BSPA">BSPA</option>
+                    <option value="BSSW">BSSW</option>
+                    <option value="BTVTEd">BTVTEd</option>
+                    <option value="DHRS">DHRS</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Year Level <span>*</span></label>
+
+                <select name="year_level" required>
+                    <option value="">Select Year Level</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Section <span>*</span></label>
+                <input
+                    type="text"
+                    name="section"
+                    placeholder="Enter section"
+                    required>
+            </div>
+
+
+            <!-- FAMILY BACKGROUND -->
+            <div class="form-section-title">
+                Family Background
+            </div>
+
+            <!-- FATHER'S INFORMATION -->
+            <div class="form-section-title">
+                Father's Information
+            </div>
+
+            <div class="form-group">
+                <label>Father's Full Name</label>
+                <input
+                    type="text"
+                    name="father_name"
+                    placeholder="Enter father's full name">
+            </div>
+
+            <div class="form-group">
+                <label>Father's Occupation</label>
+                <input
+                    type="text"
+                    name="father_occupation"
+                    placeholder="Enter father's occupation">
+            </div>
+
+            <div class="form-group">
+                <label>Father's Contact Number</label>
+                <input
+                    type="text"
+                    name="father_contact"
+                    placeholder="Enter father's contact number">
+            </div>
+
+
+            <!-- MOTHER'S INFORMATION -->
+            <div class="form-section-title">
+                Mother's Information
+            </div>
+
+            <div class="form-group">
+                <label>Mother's Full Name</label>
+                <input
+                    type="text"
+                    name="mother_name"
+                    placeholder="Enter mother's full name">
+            </div>
+
+            <div class="form-group">
+                <label>Mother's Occupation</label>
+                <input
+                    type="text"
+                    name="mother_occupation"
+                    placeholder="Enter mother's occupation">
+            </div>
+
+            <div class="form-group">
+                <label>Mother's Contact Number</label>
+                <input
+                    type="text"
+                    name="mother_contact"
+                    placeholder="Enter mother's contact number">
+            </div>
+
+
+            <!-- MODAL ACTIONS -->
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-button"
+                    onclick="closeStudentModal()">
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-button">
+                    Add Student
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL JAVASCRIPT -->
+<script>
+
+function openStudentModal() {
+    document.getElementById("studentModal").classList.add("show");
+}
+
+function closeStudentModal() {
+    document.getElementById("studentModal").classList.remove("show");
+}
+
+document.getElementById("studentModal").addEventListener("click", function(event) {
+    if (event.target === this) {
+        closeStudentModal();
+    }
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeStudentModal();
+    }
+});
+
+</script>
+
+</body>
+</html>

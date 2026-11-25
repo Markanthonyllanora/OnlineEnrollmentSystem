@@ -1,0 +1,140 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Student - Online Enrollment System</title>
+
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h2>Online<br>Enrollment<br>System</h2>
+        </div>
+
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                Dashboard
+            </a>
+        </nav>
+
+        <form method="POST" action="{% url 'logout' %}" class="sidebar-logout">
+            {% csrf_token %}
+            <button type="submit">Log Out</button>
+        </form>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="top-header">
+            <h1>Edit Student</h1>
+        </header>
+
+        <section class="students-section">
+
+            <div class="section-header">
+                <h2>Student Information</h2>
+            </div>
+
+            <form method="POST"
+                  action="{% url 'edit_student' student.id %}"
+                  class="edit-student-form">
+
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="alert">
+                        Please check the form fields and correct any errors.
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-section-title">
+                    Personal Information
+                </div>
+
+                <div class="form-group">
+                    <label>Student Number</label>
+                    {{ form.student_number }}
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    {{ form.full_name }}
+                </div>
+
+                <div class="form-group">
+                    <label>Birth Date</label>
+                    {{ form.birth_date }}
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    {{ form.contact_number }}
+                </div>
+
+                <div class="form-group">
+                    <label>Complete Address</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="form-section-title">
+                    Academic Information
+                </div>
+
+                <div class="form-group">
+                    <label>Course</label>
+                    {{ form.course }}
+                </div>
+
+                <div class="form-group">
+                    <label>Year Level</label>
+                    {{ form.year_level }}
+                </div>
+
+                <div class="form-group">
+                    <label>Section</label>
+                    {{ form.section }}
+                </div>
+
+                <div class="modal-actions">
+
+                    <a href="{% url 'student_detail' student.id %}"
+                       class="cancel-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="save-button">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
